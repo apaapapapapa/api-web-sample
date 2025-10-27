@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Custom PMD Rules"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd"
+    xsi:noNamespaceSchemaLocation="https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+    <description>
+        このルールセットはプロジェクトの標準ルールをまとめたもので、カテゴリ単位のインポートに加えて
+        プロジェクトに合わせた除外やプロパティ上書きを設定できます。必要に応じて編集してください。
+    </description>
+
+    <!-- 基本的なベストプラクティスを取り込み -->
+    <rule ref="category/java/bestpractices.xml" />
+
+    <!-- エラープローンなコード検出 -->
+    <rule ref="category/java/errorprone.xml">
+        <!-- 例: 単体テストでは未使用になることが多いことから AvoidDuplicateLiterals を除外 -->
+        <exclude name="AvoidDuplicateLiterals" />
+    </rule>
+
+    <!-- パフォーマンス関連の検知 -->
+    <rule ref="category/java/performance.xml" />
+
+    <!-- コーディングスタイル。必要に応じてプロパティを上書き可能 -->
+    <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName">
+        <properties>
+            <!-- IDE が自動付与する完全修飾名を許容したい場合は true に設定 -->
+            <property name="allowIfFullyQualified" value="false" />
+        </properties>
+    </rule>
+</ruleset>
