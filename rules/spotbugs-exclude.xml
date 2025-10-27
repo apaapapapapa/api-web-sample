@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!--
+        SpotBugs による検出結果から除外したいパターンをここに追加します。
+        例として、永続化フレームワークで意図的に使用される未使用フィールドを抑制しています。
+        プロジェクトの方針に合わせて <Match> ブロックを追加・削除してください。
+    -->
+    <Match>
+        <Bug pattern="NP_UNWRITTEN_FIELD" />
+        <Class name="~com\.example\.sample\.model\..*" />
+    </Match>
+</FindBugsFilter>

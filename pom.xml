@@ -205,6 +205,7 @@
                     <failOnError>false</failOnError>
                     <includeTests>false</includeTests>
                     <xmlOutput>true</xmlOutput>
+                    <excludeFilterFile>rules/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
                 <executions>
                     <execution>
@@ -222,10 +223,7 @@
                 <version>${version.pmd.plugin}</version>
                 <configuration>
                     <rulesets>
-                        <ruleset>category/java/bestpractices.xml</ruleset>
-                        <ruleset>category/java/errorprone.xml</ruleset>
-                        <ruleset>category/java/performance.xml</ruleset>
-                        <ruleset>category/java/codestyle.xml</ruleset>
+                        <ruleset>rules/pmd-ruleset.xml</ruleset>
                     </rulesets>
                     <targetJdk>${maven.compiler.source}</targetJdk>
                     <printFailingErrors>true</printFailingErrors>
@@ -274,10 +272,7 @@
                 <version>${version.pmd.plugin}</version>
                 <configuration>
                     <rulesets>
-                        <ruleset>category/java/bestpractices.xml</ruleset>
-                        <ruleset>category/java/errorprone.xml</ruleset>
-                        <ruleset>category/java/performance.xml</ruleset>
-                        <ruleset>category/java/codestyle.xml</ruleset>
+                        <ruleset>rules/pmd-ruleset.xml</ruleset>
                     </rulesets>
                     <targetJdk>${maven.compiler.source}</targetJdk>
                     <printFailingErrors>true</printFailingErrors>
@@ -289,6 +284,9 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>${version.spotbugs.plugin}</version>
+                <configuration>
+                    <excludeFilterFile>rules/spotbugs-exclude.xml</excludeFilterFile>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
