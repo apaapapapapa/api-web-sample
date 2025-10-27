@@ -10,9 +10,8 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 
 /**
- * Utility that resets the in-memory database to a deterministic state before
- * each Karate scenario. The helper is wired from {@link KarateTestServer} and
- * invoked directly from the feature files.
+ * Karate のシナリオ実行前に、インメモリ DB を毎回同じ状態へ初期化するユーティリティです。
+ * {@link KarateTestServer} から呼び出され、フィーチャーファイルからも直接利用されます。
  */
 public final class TestDataManager {
 
@@ -26,8 +25,7 @@ public final class TestDataManager {
     }
 
     /**
-     * Clears all persisted details and inserts a small deterministic dataset
-     * that mirrors the scenarios covered by the regression tests.
+     * 保存済みの明細をすべて削除し、回帰テストで利用するサンプルデータを分かりやすく再登録します。
      */
     public static synchronized void reset() {
         final EntityManagerFactory emf = Objects.requireNonNull(entityManagerFactory,
