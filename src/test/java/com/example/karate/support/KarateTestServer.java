@@ -32,9 +32,8 @@ import jakarta.persistence.Persistence;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * Bootstraps an embedded Jersey server that exposes the same REST resources as
- * the production application. The server is used exclusively by the Karate
- * regression tests.
+ * Karate のシナリオテスト向けに組み込み Jersey サーバーを起動・停止するヘルパークラス。
+ * 本番と同じ REST リソースを読み込み、テスト実行ごとに初期化された状態で API を提供する。
  */
 public final class KarateTestServer {
 
@@ -44,11 +43,20 @@ public final class KarateTestServer {
 
     private URI baseUri;
 
+    /**
+     * テスト用の永続化ユニットを初期化し、テストデータ管理クラスへ渡す。
+     */
     public KarateTestServer() {
         this.entityManagerFactory = Persistence.createEntityManagerFactory("jakartaee-sample-test");
         TestDataManager.configure(entityManagerFactory);
     }
 
+    /**
+     * 空いているポートを自動で確保してサーバーを起動し、ベース URI を返す。
+     *
+     * @return 起動したサーバーのベース URI
+     * @throws IllegalStateException 既にサーバーが起動済みの場合
+     */
     public URI start() {
         if (server != null) {
             return Objects.requireNonNull(baseUri, "Server already running without base URI");
@@ -74,10 +82,19 @@ public final class KarateTestServer {
         return baseUri;
     }
 
+    /**
+     * 起動中のサーバーにアクセスするためのベース URI を取得する。
+     *
+     * @return サーバーのベース URI
+     * @throws NullPointerException サーバーが起動していない場合
+     */
     public URI getBaseUri() {
         return Objects.requireNonNull(baseUri, "Server has not been started yet");
     }
 
+    /**
+     * サーバーを停止してリソースを解放する。サーバーが停止中でも安全に呼び出せる。
+     */
     public void stop() {
         if (server != null) {
             server.shutdownNow();
