@@ -22,7 +22,7 @@
         <version.junit>5.11.2</version.junit>
         <version.lombok>1.18.34</version.lombok>
         <version.mockito>5.14.1</version.mockito>
-        <version.karate>1.5.1</version.karate>
+        <version.karate>1.4.1</version.karate>
         <version.playwright>1.45.0</version.playwright>
         <version.pmd.plugin>3.22.0</version.pmd.plugin>
         <version.jersey.common>3.1.5</version.jersey.common>
