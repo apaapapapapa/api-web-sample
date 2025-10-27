@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import com.example.playwright.page.DetailListPage;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
@@ -19,8 +20,9 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
  */
 class FirstPlaywrightTest {
 
-    private static final String DATA_TABLE_ROWS = "#form\\:dataTable tbody tr";
+    private static final String PROPERTY_BASE_URL = "playwright.baseUrl";
     private static final String PROPERTY_HEADLESS = "playwright.headless";
+    private static final String DEFAULT_BASE_URL = "http://localhost:8080";
 
     /**
      * http://localhost:8080/detail-list.xhtml にアクセスし、
@@ -30,10 +32,10 @@ class FirstPlaywrightTest {
     void shouldDisplayDetailListPageOnLocalhost() {
         // ローカル環境で起動したアプリケーションへ直接ナビゲートする。
         runInBrowser(page -> {
-            page.navigate("http://localhost:8080/detail-list.xhtml");
-            page.waitForSelector(DATA_TABLE_ROWS);
+            DetailListPage detailListPage = DetailListPage.navigateTo(page, getBaseUrl());
+            detailListPage.waitForDataRows();
             // 確認対象のテーブル行が表示されていることをアサートする。
-            assertThat(page.locator(DATA_TABLE_ROWS).first()).isVisible();
+            assertThat(detailListPage.firstDataRow()).isVisible();
         });
     }
 
@@ -64,4 +66,7 @@ class FirstPlaywrightTest {
                 .setHeadless(Boolean.getBoolean(PROPERTY_HEADLESS));
     }
 
+    private String getBaseUrl() {
+        return System.getProperty(PROPERTY_BASE_URL, DEFAULT_BASE_URL);
+    }
 }
