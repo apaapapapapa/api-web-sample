@@ -8,7 +8,8 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Fallback mapper that hides internal errors behind a generic payload.
+ * 想定外の例外を受け取ったときに実行されるフォールバックのマッパーです。
+ * 内部情報を隠しつつ、利用者には共通メッセージのみを返します。
  */
 @Provider
 @ApplicationScoped

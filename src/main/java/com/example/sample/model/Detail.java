@@ -13,6 +13,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 明細テーブルに対応するエンティティです。
+ * 画面に表示するタイトルや状態を保持します。
+ */
 @Entity
 @Table(name = "detail")
 @Getter

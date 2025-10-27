@@ -11,10 +11,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * リクエストとレスポンスの文字コードをUTF-8に統一するフィルターです。
+ * フォーム送信で文字化けしないよう、全リクエストに適用します。
+ */
 @WebFilter("/*")
 @NoArgsConstructor
 public class CharacterEncodingFilter implements Filter {
 
+    /**
+     * フィルターチェーンの中でUTF-8を設定し、その後の処理へ制御を渡します。
+     */
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
         throws IOException, ServletException {

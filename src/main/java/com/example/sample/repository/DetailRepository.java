@@ -12,6 +12,10 @@ import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
+/**
+ * 明細テーブルへアクセスするためのリポジトリです。
+ * JPQLを用いてユーザーごとの明細検索や更新を行います。
+ */
 @ApplicationScoped
 @NoArgsConstructor // Weldの制約で引数なしコンストラクタも必要
 public class DetailRepository {
@@ -25,6 +29,12 @@ public class DetailRepository {
     
     private static final String USER_ID_PARAM = "userId";
 
+    /**
+     * 指定したユーザーが所有する明細をすべて取得します。
+     *
+     * @param userId 所有者のユーザーID
+     * @return 明細のリスト（降順）
+     */
     public List<Detail> findByUserId(final String userId) {
         requireUserId(userId);
         return em.createQuery(
@@ -34,6 +44,14 @@ public class DetailRepository {
             .getResultList();
     }
 
+    /**
+     * ユーザーと状態を条件に明細を検索します。
+     * 状態が未指定の場合はユーザー条件のみで検索します。
+     *
+     * @param userId 所有者のユーザーID
+     * @param status 絞り込み対象の状態（null可）
+     * @return 条件に一致する明細のリスト
+     */
     public List<Detail> findByUserIdAndStatus(final String userId, final Status status) {
         requireUserId(userId);
         if (status == null) {
@@ -47,6 +65,13 @@ public class DetailRepository {
             .getResultList();
     }
 
+    /**
+     * 指定したID群の中で、ユーザーが所有している明細だけを取得します。
+     *
+     * @param ids 確認したい明細IDのリスト
+     * @param userId 所有者のユーザーID
+     * @return 条件に合致する明細のリスト
+     */
     public List<Detail> findByDetailIdInAndOwnerUserId(final List<Long> ids, final String userId) {
         requireUserId(userId);
         if (ids == null || ids.isEmpty()) {
@@ -60,6 +85,12 @@ public class DetailRepository {
             .getResultList();
     }
 
+    /**
+     * 明細をロックし、申請中の状態へ更新します。
+     *
+     * @param detailId 対象の明細ID
+     * @param userId 操作しているユーザーID
+     */
     @Transactional(Transactional.TxType.REQUIRED)
     public void lockAndMarkRequested(final Long detailId, final String userId) {
         requireUserId(userId);
@@ -71,6 +102,11 @@ public class DetailRepository {
         em.flush();
     }
 
+    /**
+     * ユーザーIDのバリデーションを行います。
+     *
+     * @param userId チェック対象のユーザーID
+     */
     private static void requireUserId(String userId) {
         if (userId == null || userId.isBlank()) {
             throw new IllegalArgumentException("userId is required");

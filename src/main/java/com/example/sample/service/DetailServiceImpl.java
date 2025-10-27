@@ -14,6 +14,10 @@ import com.example.sample.model.Detail;
 import com.example.sample.model.Status;
 import com.example.sample.repository.DetailRepository;
 
+/**
+ * {@link DetailService} の具体的な実装です。
+ * リポジトリを呼び出して明細の取得・更新を行います。
+ */
 @ApplicationScoped
 public class DetailServiceImpl implements DetailService {
 
@@ -24,6 +28,9 @@ public class DetailServiceImpl implements DetailService {
         this.detailRepository = detailRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<DetailRowView> getListForLoginUser(final String userId, final Status status) {
@@ -34,6 +41,9 @@ public class DetailServiceImpl implements DetailService {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
     public void apply(final List<Long> selectedDetailIds, final String userId) {
@@ -68,6 +78,11 @@ public class DetailServiceImpl implements DetailService {
         }
     }
 
+    /**
+     * ユーザーIDが空でないことを確認します。
+     *
+     * @param userId 確認対象のユーザーID
+     */
     private static void requireUserId(final String userId) {
         if (userId == null || userId.isBlank()) {
             throw new BusinessException("ログインユーザーが特定できません。");

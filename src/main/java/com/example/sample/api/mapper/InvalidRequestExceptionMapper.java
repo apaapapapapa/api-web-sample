@@ -9,7 +9,8 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Converts invalid request exceptions into HTTP 400 responses.
+ * リクエスト内容の不備を表す例外をHTTP 400レスポンスへ変換します。
+ * クライアントに何が問題だったのかをシンプルに伝えます。
  */
 @Provider
 @ApplicationScoped
