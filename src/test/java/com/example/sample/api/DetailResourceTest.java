@@ -23,6 +23,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * REST エンドポイント {@link DetailResource} の基本的な振る舞いを確認するテストクラスです。
+ * サービス層をモック化し、一覧取得や申請処理がどのような引数・結果になるかを順に追えます。
+ */
 @ExtendWith(MockitoExtension.class)
 class DetailResourceTest {
 
@@ -32,11 +36,17 @@ class DetailResourceTest {
     @InjectMocks
     private DetailResource resource;
 
+    /**
+     * 各テスト前にモックを差し込んだ {@link DetailResource} を用意します。
+     */
     @BeforeEach
     void setUp() {
         resource = new DetailResource(detailService);
     }
 
+    /**
+     * 正しいステータスを指定した場合に、サービス結果が API レスポンスへ整形されることを確認します。
+     */
     @Test
     void listDetailsReturnsMappedPayload() {
         // 正常系: ステータス指定で一覧が取得できることを検証する
@@ -55,6 +65,9 @@ class DetailResourceTest {
         verify(detailService).getListForLoginUser("user1", Status.DRAFT);
     }
 
+    /**
+     * 未知のステータス文字列を渡した場合に、入力エラーとして例外が送出されることを確かめます。
+     */
     @Test
     void listDetailsRejectsUnknownStatus() {
         // 異常系: 存在しないステータスが指定された場合に例外になること
@@ -62,6 +75,9 @@ class DetailResourceTest {
                 () -> resource.listDetails("user1", "unknown"));
     }
 
+    /**
+     * 申請リクエストを受け取った際に、サービスへ正しい引数で処理を委譲することを検証します。
+     */
     @Test
     void applyDelegatesToService() {
         // 正常系: 申請APIがサービスを呼び出すこと
@@ -75,6 +91,9 @@ class DetailResourceTest {
         verify(detailService).apply(List.of(1L, 2L), "user1");
     }
 
+    /**
+     * リクエストボディが空の場合に、入力エラーとして例外が発生することを確認します。
+     */
     @Test
     void applyRequiresBody() {
         // 異常系: ボディが無い場合に入力エラーとして扱われること

@@ -19,6 +19,10 @@ import com.github.database.rider.junit5.util.EntityManagerProvider;
 
 import jakarta.persistence.EntityManager;
 
+/**
+ * {@link DetailRepository} の主要メソッドをインメモリ DB 上で確認するテストクラスです。
+ * Database Rider を使って初期データを投入し、検索やロック処理の流れを追えるようにしています。
+ */
 @ExtendWith(DBUnitExtension.class)
 class DetailRepositoryTest {
 
@@ -30,12 +34,18 @@ class DetailRepositoryTest {
 
     private EntityManager em;
 
+    /**
+     * 各テスト前にエンティティマネージャーとテスト対象のリポジトリを初期化します。
+     */
     @BeforeEach
     void setUp() {
         em = emProvider.getEm();
         target = new DetailRepository(em);
     }
 
+    /**
+     * トランザクションを元に戻し、エンティティマネージャーをクリーンアップします。
+     */
     @AfterEach
     void tearDown() {
         if (em.getTransaction().isActive()) {
@@ -44,6 +54,9 @@ class DetailRepositoryTest {
         em.clear();
     }
 
+    /**
+     * 指定したユーザー ID の明細が降順で取得できることと、結果件数が期待通りであることを検証します。
+     */
     @Test
     @DataSet(value = "datasets/detail.yml", cleanBefore = true, transactional = true)
     void findByUserIdReturnsDescOrderedList() {
@@ -59,6 +72,9 @@ class DetailRepositoryTest {
         assertEquals(101L, secondId, "2件目は detailId=101");
     }
 
+    /**
+     * lockAndMarkRequested が対象レコードをロックしたうえでステータスを更新することを確認します。
+     */
     @Test
     @DataSet(value = "datasets/detail_lock.yml", cleanBefore = true, transactional = true)
     void testLockAndMarkRequested() {

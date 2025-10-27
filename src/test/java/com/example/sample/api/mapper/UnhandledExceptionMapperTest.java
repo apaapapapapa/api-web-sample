@@ -8,10 +8,18 @@ import com.example.sample.api.dto.ApiErrorResponse;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
+/**
+ * {@link UnhandledExceptionMapper} が想定外の例外を HTTP500 のレスポンスへ変換できることを
+ * シンプルに確認するテストクラスです。
+ * 初めて例外マッパーを学ぶ人でも流れが追えるよう、入力と出力の関係を明示しています。
+ */
 class UnhandledExceptionMapperTest {
 
     private final UnhandledExceptionMapper mapper = new UnhandledExceptionMapper();
 
+    /**
+     * RuntimeException を渡したときに、HTTP500 とメッセージ付きのレスポンスが返ることを検証します。
+     */
     @Test
     void mapThrowableToServerError() {
         // 正常系: 想定外の例外が500レスポンスに変換されること

@@ -23,6 +23,11 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+/**
+ * JSF のバックビーン {@link DetailListBean} の挙動を Mockito で確認するテストクラスです。
+ * 画面イベントごとの振る舞いを初心者にも分かりやすく追えるよう、
+ * 各シナリオで想定するメッセージや選択状態の変化を丁寧に検証しています。
+ */
 @ExtendWith(MockitoExtension.class)
 class DetailListBeanSubmitTest {
 
@@ -42,6 +47,9 @@ class DetailListBeanSubmitTest {
     DetailListBean bean;
     DetailSubmitForm form; // spy に差し替える（clearSelections 呼び出し検証のため）
 
+    /**
+     * テスト用のフォームとモックを初期化し、一覧画面の基本状態を再現します。
+     */
     @BeforeEach
     void setUp() {
         bean = new DetailListBean(detailService, facesContext);
