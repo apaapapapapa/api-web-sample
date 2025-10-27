@@ -22,12 +22,19 @@
         <version.junit>5.11.2</version.junit>
         <version.lombok>1.18.34</version.lombok>
         <version.mockito>5.14.1</version.mockito>
+        <version.karate>1.5.1</version.karate>
+        <version.playwright>1.45.0</version.playwright>
         <version.pmd.plugin>3.22.0</version.pmd.plugin>
         <version.jersey.common>3.1.5</version.jersey.common>
         <version.resource.plugin>3.3.1</version.resource.plugin>
         <version.spotbugs.plugin>4.8.6.6</version.spotbugs.plugin>
         <version.surefire.plugin>3.5.0</version.surefire.plugin>
         <version.wildfly>33.0.2.Final</version.wildfly>
+        <karate.env>local</karate.env>
+        <baseUrl>http://localhost:8080</baseUrl>
+        <playwright.enabled>false</playwright.enabled>
+        <playwright.baseUrl>https://example.com</playwright.baseUrl>
+        <playwright.headless>true</playwright.headless>
 
     </properties>
 
@@ -122,6 +129,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.intuit.karate</groupId>
+            <artifactId>karate-junit5</artifactId>
+            <version>${version.karate}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${version.playwright}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
             <version>${version.jersey.common}</version>
@@ -170,6 +189,13 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${version.surefire.plugin}</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <playwright.enabled>${playwright.enabled}</playwright.enabled>
+                        <playwright.baseUrl>${playwright.baseUrl}</playwright.baseUrl>
+                        <playwright.headless>${playwright.headless}</playwright.headless>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -203,6 +229,31 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${version.surefire.plugin}</version>
+                <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                    <systemPropertyVariables>
+                        <karate.env>${karate.env}</karate.env>
+                        <baseUrl>${baseUrl}</baseUrl>
+                        <playwright.enabled>${playwright.enabled}</playwright.enabled>
+                        <playwright.baseUrl>${playwright.baseUrl}</playwright.baseUrl>
+                        <playwright.headless>${playwright.headless}</playwright.headless>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>
