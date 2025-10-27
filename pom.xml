@@ -423,14 +423,6 @@
                             <plugin-options>
                                 <jboss-fork-embedded>true</jboss-fork-embedded>
                             </plugin-options>
-                            <cli-sessions>
-                                <cli-session>
-                                    <script-files>
-                                    <script>src/main/wildfly/cli/datasource.cli</script>
-                                    </script-files>
-                                    <resolve-expressions>true</resolve-expressions>
-                                </cli-session>
-                            </cli-sessions>
                         </configuration>
                         <executions>
                             <execution>
