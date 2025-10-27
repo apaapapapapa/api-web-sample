@@ -18,54 +18,79 @@
 
 <module name="Checker">
 
+  <!-- 解析対象ファイルの文字エンコーディングをUTF-8に指定 -->
   <property name="charset" value="UTF-8"/>
 
+  <!-- 違反検知時のデフォルト深刻度を外部プロパティ（未指定時はwarning）で定義 -->
   <property name="severity" value="${org.checkstyle.google.severity}" default="warning"/>
 
+  <!-- チェック対象となるファイル拡張子の一覧 -->
   <property name="fileExtensions" value="java, properties, xml"/>
   <!-- Excludes all 'module-info.java' files              -->
   <!-- See https://checkstyle.org/filefilters/index.html -->
+  <!-- module-info.javaを解析対象から除外するフィルタ -->
   <module name="BeforeExecutionExclusionFileFilter">
+    <!-- module-info.javaファイルを解析対象から除外 -->
     <property name="fileNamePattern" value="module\-info\.java$"/>
   </module>
 
+  <!-- @SuppressWarningsアノテーションに基づき違反を抑制 -->
   <module name="SuppressWarningsFilter"/>
 
   <!-- https://checkstyle.org/filters/suppressionfilter.html -->
   <module name="SuppressionFilter">
+    <!-- 外部ファイルで定義された抑制設定を読み込む -->
     <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
            default="checkstyle-suppressions.xml" />
+    <!-- 抑制設定ファイルが存在しなくてもエラーにしない -->
     <property name="optional" value="true"/>
   </module>
 
   <!-- https://checkstyle.org/filters/suppresswithnearbytextfilter.html -->
+  <!-- 近接するテキストコメントでチェックを抑制 -->
   <module name="SuppressWithNearbyTextFilter">
+    <!-- コメントに含まれる抑制対象チェック名を抽出 -->
     <property name="nearbyTextPattern"
               value="CHECKSTYLE.SUPPRESS\: (\w+) for ([+-]\d+) lines"/>
+    <!-- 抽出したチェック名を適用 -->
     <property name="checkPattern" value="$1"/>
+    <!-- コメント位置からの抑制行数を指定 -->
     <property name="lineRange" value="$2"/>
   </module>
 
   <!-- Checks for whitespace                               -->
   <!-- See http://checkstyle.org/checks/whitespace/index.html -->
+  <!-- ファイル内のタブ文字使用を検出 -->
   <module name="FileTabCharacter">
+    <!-- タブ文字が含まれる行をすべて違反とする -->
     <property name="eachLine" value="true"/>
   </module>
 
+  <!-- 行ごとの最大文字数を制限 -->
   <module name="LineLength">
+    <!-- Javaファイルに対してのみ行長チェックを実施 -->
     <property name="fileExtensions" value="java"/>
+    <!-- 1行の最大文字数を150文字に制限 -->
     <property name="max" value="150"/>
+    <!-- 指定パターンに一致する行は行長チェックから除外 -->
     <property name="ignorePattern"
              value="^package.*|^import.*|href\s*=\s*&quot;[^&quot;]*&quot;|http://|https://|ftp://"/>
   </module>
   <!--  Suppression to prevent LineLength Check from flagging lines in Text-blocks -->
+  <!-- テキストブロック向けの行長抑制フィルタ -->
   <module name="SuppressWithPlainTextCommentFilter">
+    <!-- 行長チェックを対象とする抑制フィルタ -->
     <property name="checkFormat" value="LineLength"/>
+    <!-- 直前のコメントで抑制を開始する条件 -->
     <property name="offCommentFormat" value='^.*"""\s*$'/>
+    <!-- 抑制を終了するコメントパターン -->
     <property name="onCommentFormat" value='^\s*"""\s*(?:[,;]|.+)$'/>
   </module>
+  <!-- 構文木を走査して詳細なコード規約を適用 -->
   <module name="TreeWalker">
+    <!-- クラス定義とファイル名の一致を検証 -->
     <module name="OuterTypeFilename"/>
+    <!-- シングルラインコメントの先頭に空白があるかXPathで検証 -->
     <module name="MatchXpath">
       <property name="id" value="singleLineCommentStartWithSpace"/>
       <property name="query"
@@ -74,6 +99,7 @@
                        and not(@text = '\n') and not(ends-with(@text, '//\n'))]]"/>
       <message key="matchxpath.match" value="''//'' must be followed by a whitespace."/>
     </module>
+    <!-- 特定の文字列表現（八進やUnicodeエスケープ）使用を禁止 -->
     <module name="IllegalTokenText">
       <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL, TEXT_BLOCK_CONTENT"/>
       <property name="format"
@@ -81,20 +107,26 @@
       <property name="message"
                value="Consider using special escape sequence instead of octal value or Unicode escaped value."/>
     </module>
+    <!-- Unicodeエスケープの使用を制限し必要なケースのみ許可 -->
     <module name="AvoidEscapedUnicodeCharacters">
       <property name="allowEscapesForControlCharacters" value="true"/>
       <property name="allowByTailComment" value="true"/>
       <property name="allowNonPrintableEscapes" value="true"/>
     </module>
+    <!-- ワイルドカードインポートを禁止 -->
     <module name="AvoidStarImport"/>
+    <!-- ファイルに定義できるトップレベルクラスは1つのみ -->
     <module name="OneTopLevelClass"/>
+    <!-- package/import宣言での改行位置を制御 -->
     <module name="NoLineWrap">
       <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>
     </module>
+    <!-- 制御構文で必ず波括弧を使用 -->
     <module name="NeedBraces">
       <property name="tokens"
                value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>
     </module>
+    <!-- 左波括弧の配置ルール（同じ行）を強制 -->
     <module name="LeftCurly">
       <property name="id" value="LeftCurlyEol"/>
       <property name="tokens"
@@ -104,28 +136,34 @@
                     LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF,
                     OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF"/>
     </module>
+    <!-- switch内のcase/defaultの左波括弧位置を改行スタイルに設定 -->
     <module name="LeftCurly">
       <property name="id" value="LeftCurlyNl"/>
       <property name="option" value="nl"/>
       <property name="tokens"
                 value="LITERAL_CASE, LITERAL_DEFAULT"/>
     </module>
+    <!-- switch式の特殊ケースを除外する抑制設定 -->
     <module name="SuppressionXpathSingleFilter">
       <!-- LITERAL_CASE, LITERAL_DEFAULT are reused in SWITCH_RULE  -->
       <property name="id" value="LeftCurlyNl"/>
       <property name="query" value="//SWITCH_RULE/SLIST"/>
     </module>
+    <!-- 右波括弧が同一行にあるべき構造をチェック -->
     <module name="RightCurly">
       <property name="id" value="RightCurlySame"/>
       <property name="tokens"
                 value="LITERAL_TRY, LITERAL_CATCH, LITERAL_IF, LITERAL_ELSE,
                     LITERAL_DO"/>
     </module>
+    <!-- catch節の特例を抑制 -->
+    <!-- 1行のみのブロックなど特定条件でWhitespaceAroundを除外 -->
     <module name="SuppressionXpathSingleFilter">
       <property name="id" value="RightCurlySame"/>
       <property name="query" value="//RCURLY[parent::SLIST[parent::LITERAL_CATCH
                                and not(parent::LITERAL_CATCH/following-sibling::*)]]"/>
     </module>
+    <!-- 右波括弧を単独行に配置するルールを適用 -->
     <module name="RightCurly">
       <property name="id" value="RightCurlyAlone"/>
       <property name="option" value="alone"/>
@@ -135,6 +173,7 @@
                     COMPACT_CTOR_DEF, LITERAL_SWITCH, LITERAL_CASE, LITERAL_FINALLY,
                     LITERAL_CATCH"/>
     </module>
+    <!-- 右波括弧単独行ルールの既知例外を抑制 -->
     <module name="SuppressionXpathSingleFilter">
       <!-- suppression is required till https://github.com/checkstyle/checkstyle/issues/7541 -->
       <property name="id" value="RightCurlyAlone"/>
@@ -145,6 +184,7 @@
                                or (parent::SLIST/parent::LITERAL_CATCH
                                and parent::SLIST/parent::LITERAL_CATCH/following-sibling::*)]"/>
     </module>
+    <!-- カンマやセミコロンなどの後に空白があるかを確認 -->
     <module name="WhitespaceAfter">
       <property name="tokens"
                value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE, LITERAL_RETURN,
@@ -152,13 +192,21 @@
                     LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_CATCH, LAMBDA,
                     LITERAL_CASE"/>
     </module>
+    <!-- 演算子や制御構文の前後に空白を要求 -->
     <module name="WhitespaceAround">
+      <!-- 空のコンストラクタは例外として許可 -->
       <property name="allowEmptyConstructors" value="true"/>
+      <!-- 空のラムダ式を許容 -->
       <property name="allowEmptyLambdas" value="true"/>
+      <!-- 空のメソッドを許容 -->
       <property name="allowEmptyMethods" value="true"/>
+      <!-- 空の型定義を許容 -->
       <property name="allowEmptyTypes" value="true"/>
+      <!-- 空のループ本体を許容 -->
       <property name="allowEmptyLoops" value="true"/>
+      <!-- 拡張forのコロン前後にも空白を要求 -->
       <property name="ignoreEnhancedForColon" value="false"/>
+      <!-- 空白チェック対象となるトークンの一覧 -->
       <property name="tokens"
                value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR,
                     BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, DO_WHILE, EQUAL, GE, GT, LAMBDA, LAND,
@@ -168,9 +216,11 @@
                     NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, RCURLY, SL, SLIST, SL_ASSIGN, SR,
                     SR_ASSIGN, STAR, STAR_ASSIGN, LITERAL_ASSERT,
                     TYPE_EXTENSION_AND"/>
+      <!-- 演算子の直後に空白が無い場合のメッセージ -->
       <message key="ws.notFollowed"
               value="WhitespaceAround: ''{0}'' is not followed by whitespace. Empty blocks
                may only be represented as '{}' when not part of a multi-block statement (4.1.3)"/>
+      <!-- 演算子の直前に空白が無い場合のメッセージ -->
       <message key="ws.notPreceded"
               value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
     </module>
@@ -185,173 +235,236 @@
                                  | //SLIST[count(./*)=1][parent::LITERAL_CATCH and
                                  not(parent::LITERAL_CATCH/following-sibling::*)]"/>
     </module>
+    <!-- 空ブロック内の余分な空白を検出 -->
     <module name="RegexpSinglelineJava">
       <property name="format" value="\{[ ]+\}"/>
       <property name="message" value="Empty blocks should have no spaces. Empty blocks
                                    may only be represented as '{}' when not part of a
                                    multi-block statement (4.1.3)"/>
     </module>
+    <!-- 1行に複数ステートメントを書くことを禁止 -->
     <module name="OneStatementPerLine"/>
+    <!-- 同一行での複数変数宣言を禁止 -->
     <module name="MultipleVariableDeclarations"/>
+    <!-- 配列型の書き方（ブラケット位置）を統一 -->
     <module name="ArrayTypeStyle"/>
+    <!-- switch文でdefault節の欠如を警告 -->
     <module name="MissingSwitchDefault"/>
+    <!-- switch文の意図しないフォールスルーを検出 -->
     <module name="FallThrough"/>
+    <!-- longリテラルで大文字Lのみを許可 -->
     <module name="UpperEll"/>
+    <!-- 修飾子の並び順をチェック -->
     <module name="ModifierOrder"/>
+    <!-- 宣言間に空行を入れるスタイルを管理 -->
     <module name="EmptyLineSeparator">
+      <!-- 空行ルールを適用する構造体の一覧 -->
       <property name="tokens"
                value="PACKAGE_DEF, IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                     STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF,
                     COMPACT_CTOR_DEF"/>
+      <!-- フィールド間の空行省略を許可 -->
       <property name="allowNoEmptyLineBetweenFields" value="true"/>
     </module>
+    <!-- ドット演算子の前後改行スタイルを管理 -->
     <module name="SeparatorWrap">
       <property name="id" value="SeparatorWrapDot"/>
       <property name="tokens" value="DOT"/>
       <property name="option" value="nl"/>
     </module>
+    <!-- カンマの改行ルールを設定 -->
     <module name="SeparatorWrap">
       <property name="id" value="SeparatorWrapComma"/>
       <property name="tokens" value="COMMA"/>
       <property name="option" value="EOL"/>
     </module>
+    <!-- 可変長引数の省略記号の改行位置を設定 -->
     <module name="SeparatorWrap">
       <!-- ELLIPSIS is EOL until https://github.com/google/styleguide/issues/259 -->
       <property name="id" value="SeparatorWrapEllipsis"/>
       <property name="tokens" value="ELLIPSIS"/>
       <property name="option" value="EOL"/>
     </module>
+    <!-- 配列宣言におけるブラケットの改行ルール -->
     <module name="SeparatorWrap">
       <!-- ARRAY_DECLARATOR is EOL until https://github.com/google/styleguide/issues/258 -->
       <property name="id" value="SeparatorWrapArrayDeclarator"/>
       <property name="tokens" value="ARRAY_DECLARATOR"/>
       <property name="option" value="EOL"/>
     </module>
+    <!-- メソッド参照演算子の改行ルール -->
     <module name="SeparatorWrap">
       <property name="id" value="SeparatorWrapMethodRef"/>
       <property name="tokens" value="METHOD_REF"/>
       <property name="option" value="nl"/>
     </module>
+    <!-- パッケージ名の命名規則を定義 -->
     <module name="PackageName">
       <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
       <message key="name.invalidPattern"
              value="Package name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- 型名の命名規則を定義 -->
     <module name="TypeName">
       <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                     ANNOTATION_DEF, RECORD_DEF"/>
       <message key="name.invalidPattern"
              value="Type name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- フィールド名の命名規則を定義 -->
     <module name="MemberName">
       <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
       <message key="name.invalidPattern"
              value="Member name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- メソッド引数の命名規則を定義 -->
     <module name="ParameterName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Parameter name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- ラムダ引数の命名規則を定義 -->
     <module name="LambdaParameterName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Lambda parameter name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- catch節引数の命名規則を定義 -->
     <module name="CatchParameterName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Catch parameter name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- ローカル変数の命名規則を定義 -->
     <module name="LocalVariableName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Local variable name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- パターン変数の命名規則を定義 -->
     <module name="PatternVariableName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
              value="Pattern variable name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- クラスの型パラメータ命名規則を定義 -->
     <module name="ClassTypeParameterName">
       <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
       <message key="name.invalidPattern"
              value="Class type name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- レコードコンポーネントの命名規則を定義 -->
     <module name="RecordComponentName">
       <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
       <message key="name.invalidPattern"
                value="Record component name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- レコードの型パラメータ命名規則を定義 -->
     <module name="RecordTypeParameterName">
       <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
       <message key="name.invalidPattern"
                value="Record type name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- メソッドの型パラメータ命名規則を定義 -->
     <module name="MethodTypeParameterName">
       <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
       <message key="name.invalidPattern"
              value="Method type name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- インターフェースの型パラメータ命名規則を定義 -->
     <module name="InterfaceTypeParameterName">
       <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
       <message key="name.invalidPattern"
              value="Interface type name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- finalizeメソッドの定義を禁止 -->
     <module name="NoFinalizer"/>
+    <!-- ジェネリクスなどでの空白の有無をチェック -->
     <module name="GenericWhitespace">
+      <!-- 不要な空白が後続する場合のメッセージ -->
       <message key="ws.followed"
              value="GenericWhitespace ''{0}'' is followed by whitespace."/>
+      <!-- 不要な空白が前にある場合のメッセージ -->
       <message key="ws.preceded"
              value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
+      <!-- 空白が必要な箇所に存在しない場合のメッセージ -->
       <message key="ws.illegalFollow"
              value="GenericWhitespace ''{0}'' should followed by whitespace."/>
+      <!-- 空白が不足している場合のメッセージ -->
       <message key="ws.notPreceded"
              value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
     </module>
+    <!-- インデント幅に関する詳細設定 -->
     <module name="Indentation">
+      <!-- 基本インデント幅を4に設定 -->
       <property name="basicOffset" value="4"/>
+      <!-- 波括弧の調整分も4に設定 -->
       <property name="braceAdjustment" value="4"/>
+      <!-- switchのcase節のインデント幅を2に設定 -->
       <property name="caseIndent" value="2"/>
+      <!-- throws節のインデント幅を4に設定 -->
       <property name="throwsIndent" value="4"/>
+      <!-- 行継続時のインデント幅を4に設定 -->
       <property name="lineWrappingIndentation" value="4"/>
+      <!-- 配列初期化子のインデント幅を2に設定 -->
       <property name="arrayInitIndent" value="2"/>
     </module>
 
+    <!-- 頭字語を含む名前の扱いを制御 -->
     <module name="AbbreviationAsWordInName">
+      <!-- final修飾子の有無に関わらず適用 -->
       <property name="ignoreFinal" value="false"/>
+      <!-- 許容する連続大文字の長さ（0で禁止） -->
       <property name="allowedAbbreviationLength" value="0"/>
+      <!-- 対象となる宣言種別の一覧 -->
       <property name="tokens"
                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, ANNOTATION_DEF, ANNOTATION_FIELD_DEF,
                     PARAMETER_DEF, VARIABLE_DEF, METHOD_DEF, PATTERN_VARIABLE_DEF, RECORD_DEF,
                     RECORD_COMPONENT_DEF"/>
     </module>
+    <!-- case/default節のコロン直前の空白を禁止 -->
     <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+    <!-- オーバーロードメソッドの宣言順序をチェック -->
     <module name="OverloadMethodsDeclarationOrder"/>
+    <!-- コンストラクタをクラス内で連続させることを要求 -->
     <module name="ConstructorsDeclarationGrouping"/>
+    <!-- 変数宣言と使用位置の距離を制御 -->
     <module name="VariableDeclarationUsageDistance"/>
+    <!-- インポート順序をカスタムルールで整える -->
     <module name="CustomImportOrder">
+      <!-- グループ内のインポートをアルファベット順にソート -->
       <property name="sortImportsInGroupAlphabetically" value="true"/>
+      <!-- グループ間に空行を挿入 -->
       <property name="separateLineBetweenGroups" value="true"/>
+      <!-- 静的インポートとサードパーティを順に配置 -->
       <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>
+      <!-- インポート順序チェック対象トークン -->
       <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
     </module>
+    <!-- メソッドやコンストラクタの括弧内の空白を管理 -->
     <module name="MethodParamPad">
+      <!-- 括弧内空白チェックの対象トークン -->
       <property name="tokens"
                value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF,
                     SUPER_CTOR_CALL, ENUM_CONSTANT_DEF, RECORD_DEF"/>
     </module>
+    <!-- 指定記号の前に空白を置かないことを要求 -->
     <module name="NoWhitespaceBefore">
+      <!-- 前空白禁止の対象トークン -->
       <property name="tokens"
                value="COMMA, SEMI, POST_INC, POST_DEC, DOT,
                     LABELED_STAT, METHOD_REF, ELLIPSIS"/>
+      <!-- 改行による折り返しは例外として許可 -->
       <property name="allowLineBreaks" value="true"/>
     </module>
+    <!-- アノテーション付き可変長引数の例外を抑制 -->
     <module name="SuppressionXpathSingleFilter">
       <property name="checks" value="NoWhitespaceBefore"/>
       <property name="query" value="//ELLIPSIS[preceding-sibling::TYPE/ANNOTATIONS/ANNOTATION]"/>
     </module>
+    <!-- 括弧前後の空白を管理 -->
     <module name="ParenPad">
+      <!-- 括弧空白チェック対象トークンの一覧 -->
       <property name="tokens"
                value="ANNOTATION, ANNOTATION_FIELD_DEF, CTOR_CALL, CTOR_DEF, DOT, ENUM_CONSTANT_DEF,
                     EXPR, LITERAL_CATCH, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_NEW,
@@ -359,53 +472,83 @@
                     METHOD_DEF, QUESTION, RESOURCE_SPECIFICATION, SUPER_CTOR_CALL, LAMBDA,
                     RECORD_DEF"/>
     </module>
+    <!-- 演算子で行を折り返す位置を指定 -->
     <module name="OperatorWrap">
+      <!-- 演算子を次の行の先頭に置くスタイル -->
       <property name="option" value="NL"/>
+      <!-- 行継続スタイルを適用する演算子の一覧 -->
       <property name="tokens"
                value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR,
                     LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF,
                     TYPE_EXTENSION_AND "/>
     </module>
+    <!-- 型やメソッドへのアノテーション位置を検証 -->
     <module name="AnnotationLocation">
       <property name="id" value="AnnotationLocationMostCases"/>
+      <!-- アノテーション位置チェック対象の宣言 -->
       <property name="tokens"
                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF,
                       RECORD_DEF, COMPACT_CTOR_DEF"/>
     </module>
+    <!-- 変数へのアノテーション位置を検証 -->
     <module name="AnnotationLocation">
       <property name="id" value="AnnotationLocationVariables"/>
+      <!-- 変数宣言を対象に設定 -->
       <property name="tokens" value="VARIABLE_DEF"/>
+      <!-- 同一行で複数アノテーションを許可 -->
       <property name="allowSamelineMultipleAnnotations" value="true"/>
     </module>
+    <!-- Javadocの@タグ説明を必須化 -->
     <module name="NonEmptyAtclauseDescription"/>
+    <!-- 不正な位置にあるJavadocを検出 -->
     <module name="InvalidJavadocPosition"/>
+    <!-- Javadocタグ継続行のインデントを統一 -->
     <module name="JavadocTagContinuationIndentation"/>
+    <!-- Javadocサマリー文の書き方を制限 -->
     <module name="SummaryJavadoc">
+      <!-- サマリーに使用できない文言の定義 -->
       <property name="forbiddenSummaryFragments"
                value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
     </module>
+    <!-- Javadoc段落内の改行ルールを設定 -->
     <module name="JavadocParagraph">
+      <!-- 空行を挟まずに段落を継続させる -->
       <property name="allowNewlineParagraph" value="false"/>
     </module>
+    <!-- @paramなどのタグ順序を統一 -->
     <module name="AtclauseOrder">
+      <!-- タグの表示順序を定義 -->
       <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
+      <!-- タグ順序チェック対象となる宣言 -->
       <property name="target"
                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
     </module>
+    <!-- 公開メソッドのJavadoc形式を検証 -->
     <module name="JavadocMethod">
+      <!-- publicメソッドのみを対象 -->
       <property name="accessModifiers" value="public"/>
+      <!-- @paramタグの不足を許容 -->
       <property name="allowMissingParamTags" value="true"/>
+      <!-- @returnタグの不足を許容 -->
       <property name="allowMissingReturnTag" value="true"/>
+      <!-- 指定アノテーションが付いた場合はJavadoc必須から除外 -->
       <property name="allowedAnnotations" value="Override, Test"/>
+      <!-- チェック対象とするシンボルの種類 -->
       <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
     </module>
+    <!-- 保護以上のメソッドにJavadocを要求 -->
     <module name="MissingJavadocMethod">
+      <!-- protected以上のアクセスレベルを対象 -->
       <property name="scope" value="protected"/>
+      <!-- プロパティ用アクセサのJavadoc不足を許容 -->
       <property name="allowMissingPropertyJavadoc" value="true"/>
+      <!-- 指定アノテーション付きは対象外 -->
       <property name="allowedAnnotations" value="Override, Test"/>
+      <!-- Javadoc必須チェック対象シンボル -->
       <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF,
                                    COMPACT_CTOR_DEF"/>
     </module>
+    <!-- 非publicなメソッドなど例外ケースを抑制 -->
     <module name="SuppressionXpathSingleFilter">
       <property name="checks" value="MissingJavadocMethod"/>
       <property name="query" value="//*[self::METHOD_DEF or self::CTOR_DEF
@@ -414,54 +557,85 @@
                                  or self::RECORD_DEF or self::ENUM_DEF]
                                  [not(./MODIFIERS/LITERAL_PUBLIC)]]"/>
     </module>
+    <!-- 型定義にJavadocを要求 -->
     <module name="MissingJavadocType">
+      <!-- protected以上を対象 -->
       <property name="scope" value="protected"/>
+      <!-- Javadoc必須対象の型種別 -->
       <property name="tokens"
                 value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                       RECORD_DEF, ANNOTATION_DEF"/>
+      <!-- 除外スコープを設定しない -->
       <property name="excludeScope" value="nothing"/>
     </module>
+    <!-- メソッド名の命名規則を定義 -->
     <module name="MethodName">
+      <!-- 小文字始まりのキャメルケースを要求 -->
       <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
+      <!-- 命名規則違反時のメッセージ -->
       <message key="name.invalidPattern"
              value="Method name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <!-- テストメソッド名など特定条件で除外 -->
     <module name="SuppressionXpathSingleFilter">
+      <!-- MethodNameチェックに限定 -->
       <property name="checks" value="MethodName"/>
+      <!-- Testを含むアノテーション付きメソッドを除外 -->
       <property name="query" value="//METHOD_DEF[
                                      ./MODIFIERS/ANNOTATION//IDENT[contains(@text, 'Test')]
                                    ]/IDENT"/>
+      <!-- 除外時に報告されるメッセージ文字列 -->
       <property name="message" value="'[a-z][a-z0-9][a-zA-Z0-9]*(?:_[a-z][a-z0-9][a-zA-Z0-9]*)*'"/>
     </module>
+    <!-- 1行形式のJavadocをチェック -->
     <module name="SingleLineJavadoc"/>
+    <!-- TODOコメントの書式を統一 -->
     <module name="TodoComment">
+      <!-- TODOコメントのフォーマットを正規表現で定義 -->
       <property name="format" value="^[ \t]*(?!TODO:)(?i:TODO)\b:?"/>
+      <!-- TODO表記が正しくない場合のメッセージ -->
       <message key="todo.match"
                value="''TODO:'' must be written in all caps and followed by a colon."/>
     </module>
+    <!-- 空のcatchブロックの扱いを制御 -->
     <module name="EmptyCatchBlock">
+      <!-- コメントがある場合のみ空catchを許可 -->
       <property name="commentFormat" value="\w+"/>
     </module>
+    <!-- コメント行のインデントをチェック -->
     <module name="CommentsIndentation">
+      <!-- インデントチェック対象のコメント種類 -->
       <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
     </module>
     <!-- https://checkstyle.org/filters/suppressionxpathfilter.html -->
+    <!-- XPathによる詳細な抑制設定を外部ファイルから読み込む -->
     <module name="SuppressionXpathFilter">
+      <!-- 抑制設定ファイルの場所を指定（無ければ既定ファイル） -->
       <property name="file" value="${org.checkstyle.google.suppressionxpathfilter.config}"
              default="checkstyle-xpath-suppressions.xml" />
+      <!-- ファイルが存在しなくてもエラーにしない -->
       <property name="optional" value="true"/>
     </module>
+    <!-- @SuppressWarningsアノテーションの情報を保持 -->
     <module name="SuppressWarningsHolder" />
+    <!-- 特定コメントでチェックを無効化する設定 -->
     <module name="SuppressionCommentFilter">
+      <!-- チェックを無効化するコメントの形式 -->
       <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)" />
+      <!-- チェックを再有効化するコメントの形式 -->
       <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)" />
+      <!-- コメント内で指定されたチェック名を適用 -->
       <property name="checkFormat" value="$1" />
     </module>
+    <!-- 近接するコメントで次の行のチェックを抑制 -->
     <module name="SuppressWithNearbyCommentFilter">
+      <!-- 抑制コメントの書式を定義 -->
       <property name="commentFormat" value="CHECKSTYLE.SUPPRESS\: ([\w\|]+)"/>
       <!-- $1 refers to the first match group in the regex defined in commentFormat -->
+      <!-- コメントで指定されたチェック名を適用 -->
       <property name="checkFormat" value="$1"/>
       <!-- The check is suppressed in the next line of code after the comment -->
+      <!-- コメントの次行のみ抑制対象とする -->
       <property name="influenceFormat" value="1"/>
     </module>
   </module>
