@@ -23,6 +23,7 @@
         <version.lombok>1.18.34</version.lombok>
         <version.mockito>5.14.1</version.mockito>
         <version.pmd.plugin>3.22.0</version.pmd.plugin>
+        <version.jersey.common>3.1.5</version.jersey.common>
         <version.resource.plugin>3.3.1</version.resource.plugin>
         <version.spotbugs.plugin>4.8.6.6</version.spotbugs.plugin>
         <version.surefire.plugin>3.5.0</version.surefire.plugin>
@@ -118,6 +119,12 @@
             <groupId>jakarta.el</groupId>
             <artifactId>jakarta.el-api</artifactId>
             <version>${version.jakarta.el-api}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <version>${version.jersey.common}</version>
             <scope>test</scope>
         </dependency>
 
