@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Standard error payload returned by the API.
+ * APIでエラーが発生した際に返す共通のレスポンスです。
+ * まずはエラーメッセージだけを返すシンプルな構成になっています。
  */
 @Getter
 @Setter
@@ -14,5 +15,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApiErrorResponse {
 
+    /** 利用者に伝えるエラーメッセージ。 */
     private String message;
 }

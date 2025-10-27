@@ -9,7 +9,8 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Converts application business exceptions to HTTP 400 responses.
+ * 業務エラーをHTTP 400レスポンスに変換するマッパーです。
+ * 画面に伝えたいメッセージをそのままレスポンスとして返します。
  */
 @Provider
 @ApplicationScoped

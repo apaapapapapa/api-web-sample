@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Response payload returned after a successful apply request.
+ * 申請が正常に受け付けられたことを伝えるためのシンプルなレスポンスボディです。
+ * メッセージ文字列だけを持ち、画面やクライアントに分かりやすい結果を返します。
  */
 @Getter
 @Setter
@@ -14,5 +15,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApplyResponse {
 
+    /** 利用者に表示する完了メッセージ。 */
     private String message;
 }
