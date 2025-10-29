@@ -9,4 +9,16 @@
         <Bug pattern="NP_UNWRITTEN_FIELD" />
         <Class name="~com\.example\.sample\.model\..*" />
     </Match>
+
+    <!-- パッケージ/パス単位で除外 -->
+    <Match>
+        <Package name="~com\.example\.legacy(\..*)?"/>
+    </Match>
+    <Match>
+        <Source name="~.*/model/.*"/>
+    </Match>
+
+    <!-- 生成物や特定クラス名 -->
+    <Match><Class name="~.*Test.*"/></Match>
+
 </FindBugsFilter>

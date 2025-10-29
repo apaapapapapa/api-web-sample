@@ -381,6 +381,7 @@
                 <version>${version.checkstyle.plugin}</version>
                 <configuration>
                     <configLocation>rules/google_checks.xml</configLocation>
+                    <suppressionsLocation>rules/checkstyle_suppressions.xml</suppressionsLocation>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>
