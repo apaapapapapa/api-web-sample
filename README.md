@@ -6,3 +6,6 @@ mvn clean install -P wildfly-bootable-jar
 - Disabled by default. Maven passes `-Dplaywright.enabled=false`, so the tests skip unless you override it.
 - Provide a reachable application URL before enabling: `mvn test -Dplaywright.enabled=true -Dplaywright.baseUrl=http://localhost:8080`.
 - Keep `-Dplaywright.headless=true` if you are running in CI or another environment without a display.
+
+## Gatling load tests
+mvn "-Dgatling.simulationClass=com.example.sample.performance.WebPageSimulation" gatling:test
