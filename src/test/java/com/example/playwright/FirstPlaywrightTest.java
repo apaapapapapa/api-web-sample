@@ -1,16 +1,26 @@
 package com.example.playwright;
 
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.Consumer;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.Browser.NewContextOptions;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 /**
  * Playwright を使った最初のサンプルテスト。
@@ -38,6 +48,51 @@ class FirstPlaywrightTest {
     }
 
     /**
+     * ファイルダウンロード操作を行い、ダウンロードされたファイルを byte[] で取得して
+     * テスト実行環境上のファイルとして保存するサンプル。
+     *
+     * ※ 実際の画面に合わせて navigate 先とクリック対象のセレクタは調整してください。
+     */
+    @Disabled
+    @Test
+    void shouldDownloadFileAndSaveToLocalAsBytes() {
+        runInBrowser(page -> {
+            // ダウンロードリンク／ボタンがあるページへ遷移
+            page.navigate("http://localhost:8080/download.xhtml");
+
+            // ダウンロード開始を待ちながら、ダウンロードボタンをクリック
+            Download download = page.waitForDownload(() -> {
+                // 実際の画面の要素に合わせてセレクタを変更してください
+                // 例: id="downloadButton" のボタンをクリック
+                page.locator("#downloadButton").click();
+            });
+
+            // Download から byte[] へ読み込み
+            byte[] fileBytes;
+            try (InputStream in = download.createReadStream();
+                 ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+
+                in.transferTo(buffer);
+                fileBytes = buffer.toByteArray();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+
+            // テスト実行環境上の保存先パス
+            Path targetDir = Paths.get("build/downloads");
+            Path targetFile = targetDir.resolve(download.suggestedFilename());
+
+            try {
+                Files.createDirectories(targetDir);
+                Files.write(targetFile, fileBytes);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+
+        });
+    }
+
+    /**
      * Playwright のブラウザ起動とページ生成を共通化し、
      * 渡されたテストシナリオを実行するヘルパーメソッド。
      *
@@ -47,7 +102,9 @@ class FirstPlaywrightTest {
 
         try (Playwright playwright = Playwright.create();
              Browser browser = playwright.chromium().launch(createLaunchOptions());
-             BrowserContext context = browser.newContext()) {
+             // ダウンロード操作も扱えるよう、acceptDownloads を true にしておく
+             BrowserContext context = browser.newContext(
+                     new NewContextOptions().setAcceptDownloads(true))) {
 
             final Page page = context.newPage();
             scenario.accept(page);
