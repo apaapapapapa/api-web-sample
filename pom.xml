@@ -216,6 +216,14 @@
             <version>5.3.8</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <classifier>runtime</classifier>
+            <version>${version.jacoco}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -234,7 +242,10 @@
                         <playwright.enabled>${playwright.enabled}</playwright.enabled>
                         <playwright.baseUrl>${playwright.baseUrl}</playwright.baseUrl>
                         <playwright.headless>${playwright.headless}</playwright.headless>
+                        <jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>
                     </systemPropertyVariables>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
                 </configuration>
             </plugin>
             <plugin>
@@ -351,16 +362,19 @@
                 <version>${version.jacoco}</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
+                    <id>default-instrument</id>
+                    <goals><goal>instrument</goal></goals>
                     </execution>
+
                     <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
+                    <id>default-restore-instrumented-classes</id>
+                    <goals><goal>restore-instrumented-classes</goal></goals>
+                    </execution>
+
+                    <execution>
+                    <id>default-report</id>
+                    <phase>prepare-package</phase>
+                    <goals><goal>report</goal></goals>
                     </execution>
                 </executions>
             </plugin>
