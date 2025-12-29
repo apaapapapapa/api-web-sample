@@ -60,6 +60,10 @@
         </dependencies>
     </dependencyManagement>
 
+    <pluginGroups>
+        <pluginGroup>org.openclover</pluginGroup>
+    </pluginGroups>
+
     <dependencies>
 
         <!-- JakartaEE -->
